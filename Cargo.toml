@@ -1,0 +1,12 @@
+[package]
+name = "rantz_proto"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy_asset = "0.13.2"
+bevy_ecs = "0.13.2"
+bevy_reflect = "0.13.2"
+bevy_utils = "0.13.2"
+serde = { version = "1.0.203", features = ["derive"] }
+thiserror = "1.0.61"

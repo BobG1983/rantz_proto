@@ -1,0 +1,8 @@
+[workspace]
+release_commits = "^(feat!:|feat:|docs:|fix!:|fix:|Feat!:|Feat:|Docs:|Fix!:|Fix:)" # only release on commit messages matching this regex
+release_always = false                                                             # only release on a release pr
+allow_dirty = false                                                                # allow updating repositories with uncommitted changes
+changelog_update = true                                                            # disable changelog updates
+dependencies_update = true                                                         # update dependencies with `cargo update`
+pr_labels = ["release"]                                                            # add the `release` label to the release Pull Request
+publish_allow_dirty = false                                                        # add `--allow-dirty` to `cargo publish`

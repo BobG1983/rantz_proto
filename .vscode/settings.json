@@ -1,0 +1,15 @@
+{
+  "rust-analyzer.cargo.targetDir": true,
+  "rust-analyzer.diagnostics.styleLints.enable": true,
+  "rust-analyzer.imports.preferPrelude": true,
+  "rust-analyzer.testExplorer": true,
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.restartServerOnConfigChange": true,
+  "cSpell.words": [
+    "fastrand",
+    "Hasher",
+    "leafwing",
+    "Proto",
+    "thiserror"
+  ],
+}
