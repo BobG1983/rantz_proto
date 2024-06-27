@@ -5,14 +5,4 @@
   "rust-analyzer.testExplorer": true,
   "rust-analyzer.check.command": "clippy",
   "rust-analyzer.restartServerOnConfigChange": true,
-  "cSpell.words": [
-    "fastrand",
-    "Hasher",
-    "leafwing",
-    "msgpack",
-    "Proto",
-    "protos",
-    "resmut",
-    "thiserror"
-  ],
 }

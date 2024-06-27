@@ -1,5 +1,9 @@
 use crate::prelude::*;
-use bevy::{asset::LoadState, prelude::*};
+use bevy::{
+    asset::LoadState,
+    prelude::*,
+    tasks::{block_on, poll_once},
+};
 use std::any::type_name;
 
 pub fn update_manifest_loader(asset_server: Res<AssetServer>, mut loader: ResMut<ManifestLoader>) {
@@ -75,5 +79,19 @@ pub fn process_manifest_collection<M: Manifest<Output = P>, P: Prototype>(
             error!("Manifest failed to load: {:?}", type_name::<M>());
         }
         _ => {}
+    }
+}
+
+pub fn handle_async_spawn(
+    mut commands: Commands,
+    mut load_tasks: Query<(Entity, &mut ProtoSpawnTask)>,
+) {
+    for (e, mut load_task) in load_tasks.iter_mut() {
+        if load_task.0.is_finished() {
+            if let Some(mut command_queue) = block_on(poll_once(&mut load_task.0)) {
+                commands.append(&mut command_queue);
+                commands.entity(e).despawn_recursive();
+            }
+        }
     }
 }

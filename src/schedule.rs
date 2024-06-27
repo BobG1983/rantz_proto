@@ -4,4 +4,5 @@ use bevy::prelude::*;
 pub enum ProtoSchedule {
     Processing,
     Loading,
+    Spawning,
 }

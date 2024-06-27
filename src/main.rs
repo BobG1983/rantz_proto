@@ -1,4 +1,4 @@
-use bevy::{ecs::system::EntityCommand, log::LogPlugin, prelude::*};
+use bevy::{app::AppExit, ecs::system::EntityCommand, log::LogPlugin, prelude::*};
 use rantz_proto::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
@@ -49,12 +49,11 @@ impl Manifest for TestManifest {
     }
 }
 
-fn check_stuff(protos: Res<PrototypeLibrary<TestProto>>) {
-    if !protos.is_empty() {
+fn check_stuff(protos: Res<PrototypeLibrary<TestProto>>, mut done: Local<bool>) {
+    if !*done && !protos.is_empty() {
         debug!("All manifests loaded");
+        *done = true;
     }
-
-    debug!("{:#?}", protos);
 }
 
 fn spawn_stuff(
@@ -68,12 +67,19 @@ fn spawn_stuff(
 
     if *counter < 10 {
         *counter += 1;
-        commands.spawn_prototype(protos.first().unwrap());
+        commands.spawn_prototype_async(protos.first().unwrap());
     }
 }
 
-fn count_stuff(query: Query<&Name>) {
+fn count_stuff(query: Query<&Name>, mut events: EventWriter<AppExit>) {
     let count = query.iter().count();
 
-    debug!("I see {} entities", count);
+    if count <= 10 {
+        debug!("I see {} entities", count)
+    };
+
+    if count >= 10 {
+        debug!("Exiting");
+        events.send_default();
+    }
 }

@@ -20,6 +20,10 @@ impl ProtoPlugin {
         app.add_systems(
             PreUpdate,
             update_manifest_loader.in_set(ProtoSchedule::Loading),
+        )
+        .add_systems(
+            PostUpdate,
+            handle_async_spawn.in_set(ProtoSchedule::Spawning),
         );
     }
 
