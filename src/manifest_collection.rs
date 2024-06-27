@@ -2,12 +2,21 @@ use crate::prelude::*;
 use bevy::prelude::*;
 use serde::Deserialize;
 
-#[derive(Deserialize, Asset, TypePath, Debug)]
+#[derive(Deserialize, Clone, Asset, TypePath, Debug)]
 pub struct ManifestCollection<M>
 where
     M: Asset + Clone,
 {
     pub protos: Vec<M>,
+}
+
+impl<M> AccessManifestFormat for ManifestCollection<M>
+where
+    M: Manifest,
+{
+    fn manifest_format() -> ManifestFormat {
+        M::FORMAT
+    }
 }
 
 impl<M> Default for ManifestCollection<M>

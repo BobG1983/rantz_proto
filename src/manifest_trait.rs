@@ -15,3 +15,17 @@ pub trait Manifest: Clone + Asset + for<'de> Deserialize<'de> {
     type Output;
     fn reify(&self) -> Self::Output;
 }
+
+pub trait AccessManifestFormat {
+    fn manifest_format() -> ManifestFormat;
+}
+
+impl<T> AccessManifestFormat for T
+where
+    T: Manifest,
+{
+    fn manifest_format() -> ManifestFormat {
+        T::FORMAT
+    }
+}
+

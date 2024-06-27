@@ -22,6 +22,8 @@ pub mod traits {
         commands_ext::*, manifest_format::ManifestFormat, manifest_trait::Manifest,
         prototype_trait::Prototype, register::RegisterPrototype,
     };
+
+    pub(crate) use crate::manifest_trait::AccessManifestFormat;
 }
 
 pub mod library {
