@@ -16,12 +16,10 @@ fn main() {
         .run();
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Prototype)]
 pub struct TestProto {
     pub name: String,
 }
-
-impl Prototype for TestProto {}
 
 impl Display for TestProto {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

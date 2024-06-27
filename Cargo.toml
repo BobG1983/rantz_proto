@@ -1,13 +1,23 @@
 [package]
 name = "rantz_proto"
 version = "0.1.0"
+authors = ["Robert Gardner'"]
 edition = "2021"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/BobG1983/rantz_proto"
+homepage = "https://github.com/BobG1983/rantz_proto"
+keywords = ["gamedev", "bevy"]
+categories = ["game-engines"]
+description = "An opinionated rust library for transforming on-disk assets into Entities in Bevy."
+
 
 [dependencies]
 bevy = { version = "0.13", default-features = false, features = ["bevy_asset"] }
 serde = { version = "1.0.203", features = ["derive"] }
 thiserror = "1.0.61"
 bevy_common_assets = { version = "0.10.0", default-features = false }
+rantz_proto_macros = { version = "0.1.0", path = "rantz_proto_macros" }
 
 [features]
 # All file formats are disabled by default: you will typically want to enable
@@ -50,7 +60,9 @@ rantz_proto = { path = ".", features = ["ron"] }
 # Give us access to the full Bevy default features for examples.
 bevy = { version = "0.13" }
 
+[workspace]
+members = ["rantz_proto_macros"]
+
 [workspace.lints.rust]
 unsafe_code = "forbid"
 missing_docs = "warn"
-type_complexity = "allow"

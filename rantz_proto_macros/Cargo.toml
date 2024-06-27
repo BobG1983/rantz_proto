@@ -1,0 +1,23 @@
+[package]
+name = "rantz_proto_macros"
+version = "0.1.0"
+authors = ["Robert Gardner'"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/BobG1983/rantz_proto"
+homepage = "https://github.com/BobG1983/rantz_proto"
+keywords = ["gamedev", "bevy"]
+categories = ["game-engines"]
+description = "Derive macros for rantz_proto"
+
+[dependencies]
+proc-macro2 = "1.0.86"
+quote = "1.0.36"
+syn = { version = "2.0.68", features = ["full"] }
+
+[lib]
+proc-macro = true
+
+[lints]
+workspace = true

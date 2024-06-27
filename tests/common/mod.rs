@@ -9,12 +9,10 @@ pub struct Counter {
     pub i: i32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Prototype)]
 pub struct TestProto {
     pub i: i32,
 }
-
-impl Prototype for TestProto {}
 
 impl Display for TestProto {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -42,9 +40,8 @@ impl Manifest for TestManifest {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Prototype)]
 pub struct EmptyProto;
-impl Prototype for EmptyProto {}
 
 impl Display for EmptyProto {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
