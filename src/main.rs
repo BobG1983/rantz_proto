@@ -19,6 +19,7 @@ fn main() {
 #[derive(Debug, Clone, Prototype)]
 pub struct TestProto {
     pub name: String,
+    pub test: TestEnum,
 }
 
 impl Display for TestProto {
@@ -34,9 +35,16 @@ impl EntityCommand for TestProto {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum TestEnum {
+    A,
+    B,
+}
+
 #[derive(Serialize, Deserialize, Asset, TypePath, Clone)]
 pub struct TestManifest {
     pub name: String,
+    pub test: TestEnum,
 }
 
 impl Manifest for TestManifest {
@@ -45,6 +53,7 @@ impl Manifest for TestManifest {
     fn reify(&self) -> TestProto {
         TestProto {
             name: self.name.clone(),
+            test: self.test.clone(),
         }
     }
 }

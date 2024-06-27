@@ -1,10 +1,12 @@
 (
     protos: [
         (
-            name: "Foo"
+            name: "Foo",
+            test: A,
         ),
         (
-            name: "Bar" 
+            name: "Bar",
+            test: B,
         )
     ]
 )
