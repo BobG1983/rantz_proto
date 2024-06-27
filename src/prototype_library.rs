@@ -1,19 +1,20 @@
+use std::any::type_name;
+
 use crate::prelude::*;
-use bevy_ecs::system::Resource;
-use bevy_utils::HashMap;
+use bevy::{prelude::*, utils::HashMap};
 use thiserror::Error;
 
-#[derive(Default, Debug, Resource)]
-pub struct PrototypeLibrary<T>
+#[derive(Debug, Resource)]
+pub struct PrototypeLibrary<P>
 where
-    T: Prototype,
+    P: Prototype,
 {
-    prototypes: HashMap<Id<T>, T>,
+    prototypes: HashMap<Id<P>, P>,
 }
 
-impl<T> PrototypeLibrary<T>
+impl<P> PrototypeLibrary<P>
 where
-    T: Prototype,
+    P: Prototype,
 {
     pub fn new() -> Self {
         Self {
@@ -22,48 +23,68 @@ where
     }
 
     #[must_use]
-    pub fn get(&self, id: Id<T>) -> Option<&T> {
-        self.prototypes.get(&id)
+    pub fn get(&self, id: &Id<P>) -> Option<P> {
+        if let Some(p) = self.prototypes.get(id) {
+            let p: P = p.to_owned();
+            Some(p)
+        } else {
+            None
+        }
     }
 
     #[must_use]
-    pub fn get_by_name(&self, name: &str) -> Option<&T> {
-        self.get(Id::from_name(name))
+    pub fn get_by_name(&self, name: &str) -> Option<P> {
+        self.get(&Id::from_name(name))
     }
 
     #[must_use]
-    pub fn get_mut(&mut self, id: Id<T>) -> Option<&mut T> {
-        self.prototypes.get_mut(&id)
+    pub fn get_id(&self, name: &str) -> Option<Id<P>> {
+        let maybe_id = Id::from_name(name);
+        if self.get(&maybe_id).is_some() {
+            return Some(maybe_id);
+        }
+
+        None
     }
 
     #[must_use]
-    pub fn get_mut_by_name(&mut self, name: &str) -> Option<&mut T> {
-        self.get_mut(Id::from_name(name))
+    pub fn get_mut(&mut self, id: &Id<P>) -> Option<&mut P> {
+        self.prototypes.get_mut(id)
     }
 
-    pub fn insert(&mut self, item: T) -> Result<Id<T>, LibraryError> {
+    #[must_use]
+    pub fn get_mut_by_name(&mut self, name: &str) -> Option<&mut P> {
+        self.get_mut(&Id::from_name(name))
+    }
+
+    pub fn insert(&mut self, item: P) -> Result<Id<P>, PrototypeLibraryError> {
         let id = Id::from_name(&item.to_string());
         if self.prototypes.contains_key(&id) {
-            Err(LibraryError::DuplicateName(item.to_string()))
+            Err(PrototypeLibraryError::Duplicate(
+                type_name::<P>().to_string(),
+            ))
         } else {
             self.prototypes.insert(id, item);
             Ok(id)
         }
     }
-    pub fn insert_from_manifest(
+
+    pub fn insert_from_manifest<M: Manifest<Output = P>>(
         &mut self,
-        manifest: impl Manifest<T>,
-    ) -> Result<Id<T>, LibraryError> {
+        manifest: M,
+    ) -> Result<Id<P>, PrototypeLibraryError> {
         self.insert(manifest.reify())
     }
 
-    pub fn remove(&mut self, id: Id<T>) -> Result<T, LibraryError> {
+    pub fn remove(&mut self, id: Id<P>) -> Result<P, PrototypeLibraryError> {
         self.prototypes
             .remove(&id)
-            .ok_or(LibraryError::NotFound(id.to_string()))
+            .ok_or(PrototypeLibraryError::NotFound(
+                type_name::<P>().to_string(),
+            ))
     }
 
-    pub fn remove_by_name(&mut self, name: &str) -> Result<T, LibraryError> {
+    pub fn remove_by_name(&mut self, name: &str) -> Result<P, PrototypeLibraryError> {
         self.remove(Id::from_name(name))
     }
 
@@ -74,17 +95,41 @@ where
     pub fn is_empty(&self) -> bool {
         self.prototypes.is_empty()
     }
+
+    pub fn first(&self) -> Option<P> {
+        if let Some(key) = self.prototypes.keys().next() {
+            self.get(key)
+        } else {
+            None
+        }
+    }
+
+    pub fn last(&self) -> Option<P> {
+        if let Some(key) = self.prototypes.keys().last() {
+            self.get(key)
+        } else {
+            None
+        }
+    }
+}
+
+impl<T> Default for PrototypeLibrary<T>
+where
+    T: Prototype,
+{
+    fn default() -> Self {
+        Self {
+            prototypes: Default::default(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Error)]
-pub enum LibraryError {
+pub enum PrototypeLibraryError {
     /// The name of the item is already in use.
     #[error("Item: {} is already in use.", _0)]
-    DuplicateName(String),
-    /// The item with the given ID was not found.
-    #[error("Item ID: {} was not found.", _0)]
+    Duplicate(String),
+    /// The item was not found.
+    #[error("Item: {} was not found.", _0)]
     NotFound(String),
-    /// The item with the given name was not found.
-    #[error("Item Name: {} was not found.", _0)]
-    NameNotFound(String),
 }

@@ -1,0 +1,10 @@
+(
+    protos: [
+        (
+            name: "Foo"
+        ),
+        (
+            name: "Bar" 
+        )
+    ]
+)

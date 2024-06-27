@@ -1,6 +1,17 @@
-use bevy_asset::Asset;
+use crate::prelude::*;
+use bevy::prelude::*;
 use serde::Deserialize;
 
-pub trait Manifest<T>: Asset + for<'de> Deserialize<'de> {
-    fn reify(&self) -> T;
+// pub trait Manifest<P>: Asset + for<'de> Deserialize<'de>
+// where
+//     P: Prototype,
+// {
+//     const FORMAT: ManifestFormat;
+//     fn reify(&self) -> P;
+// }
+
+pub trait Manifest: Clone + Asset + for<'de> Deserialize<'de> {
+    const FORMAT: ManifestFormat;
+    type Output;
+    fn reify(&self) -> Self::Output;
 }

@@ -9,7 +9,10 @@
     "fastrand",
     "Hasher",
     "leafwing",
+    "msgpack",
     "Proto",
+    "protos",
+    "resmut",
     "thiserror"
   ],
 }

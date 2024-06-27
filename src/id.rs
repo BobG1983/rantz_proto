@@ -4,8 +4,7 @@
 //! This can be constructed from a string-based identifier, stored in the human-readable files,
 //! that marks entries as e.g. "grass" or "hammer".
 
-use bevy_ecs::prelude::Component;
-use bevy_reflect::Reflect;
+use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::{
     fmt::{Debug, Display},
