@@ -11,7 +11,7 @@ fn main() {
             ..default()
         }))
         .add_plugins(ProtoPlugin)
-        .add_prototype_collection::<TestManifest, TestProto>("items.ron")
+        .add_prototypes::<TestManifest, TestProto>("items.ron")
         .add_systems(Update, (spawn_stuff, check_stuff, count_stuff))
         .run();
 }

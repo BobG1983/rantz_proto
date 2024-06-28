@@ -62,7 +62,7 @@ impl RegisterPrototype for App {
                 check_insert_loader(world);
                 world
                     .resource_mut::<ManifestLoader>()
-                    .register::<ManifestCollection<M>>(path, asset_server.as_mut());
+                    .register_collection::<ManifestCollection<M>>(path, asset_server.as_mut());
             });
 
         // Add processing system
