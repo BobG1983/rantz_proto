@@ -9,7 +9,7 @@ pub trait RegisterPrototype {
         path: impl Into<PathBuf>,
     ) -> &mut Self;
 
-    fn add_prototypes<M: Manifest<Output = P>, P: Prototype>(
+    fn add_prototype_collection<M: Manifest<Output = P>, P: Prototype>(
         &mut self,
         path: impl Into<PathBuf>,
     ) -> &mut Self;
@@ -28,7 +28,13 @@ impl RegisterPrototype for App {
         add_asset_plugins::<M>(self);
 
         // Register the manifest for loading, creating a loader if there isn't one
-        register_loader_for_manifest::<M>(self, path);
+        self.world
+            .resource_scope(|world: &mut World, mut asset_server: Mut<AssetServer>| {
+                check_insert_loader(world);
+                world
+                    .resource_mut::<ManifestLoader>()
+                    .register::<M>(path, asset_server.as_mut());
+            });
 
         // Add processing system
         self.add_systems(
@@ -39,7 +45,7 @@ impl RegisterPrototype for App {
         self
     }
 
-    fn add_prototypes<M: Manifest<Output = P>, P: Prototype>(
+    fn add_prototype_collection<M: Manifest<Output = P>, P: Prototype>(
         &mut self,
         path: impl Into<PathBuf>,
     ) -> &mut Self {
@@ -51,7 +57,13 @@ impl RegisterPrototype for App {
         add_asset_plugins::<ManifestCollection<M>>(self);
 
         // Register the manifest for loading, creating a loader if there isn't one
-        register_loader_for_manifest::<M>(self, path);
+        self.world
+            .resource_scope(|world: &mut World, mut asset_server: Mut<AssetServer>| {
+                check_insert_loader(world);
+                world
+                    .resource_mut::<ManifestLoader>()
+                    .register::<M>(path, asset_server.as_mut());
+            });
 
         // Add processing system
         self.add_systems(
@@ -61,16 +73,6 @@ impl RegisterPrototype for App {
 
         self
     }
-}
-
-fn register_loader_for_manifest<M: Manifest>(app: &mut App, path: impl Into<PathBuf>) {
-    app.world
-        .resource_scope(|world: &mut World, mut asset_server: Mut<AssetServer>| {
-            check_insert_loader(world);
-            world
-                .resource_mut::<ManifestLoader>()
-                .register::<M>(path, asset_server.as_mut());
-        });
 }
 
 fn add_asset_plugins<T: AccessManifestFormat + Clone + Asset + for<'de> Deserialize<'de>>(
