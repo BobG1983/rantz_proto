@@ -5,6 +5,7 @@ use std::fmt::Display;
 
 fn main() {
     App::new()
+        .init_state::<GameState>()
         .add_plugins(DefaultPlugins.set(LogPlugin {
             filter: "error,rantz_proto=debug".into(),
             level: bevy::log::Level::DEBUG,
@@ -12,13 +13,29 @@ fn main() {
         }))
         .add_plugins(ProtoPlugin)
         .add_prototype_collection::<TestManifest, TestProto>("items.ron")
-        .add_systems(Update, (spawn_stuff, check_stuff, count_stuff))
+        .add_systems(Update, transition_on_esc)
+        .add_systems(
+            Update,
+            (spawn_stuff, check_stuff, count_stuff).run_if(in_state(GameState::Running)),
+        )
+        .configure_sets(
+            Update,
+            ProtoSchedule::Loading.run_if(in_state(GameState::Running)),
+        )
         .run();
 }
 
+#[derive(Debug, Clone, States, Hash, PartialEq, Eq, Default)]
+enum GameState {
+    #[default]
+    Loading,
+    Running,
+}
+
 #[derive(Debug, Clone, Prototype)]
-pub struct TestProto {
+struct TestProto {
     pub name: String,
+    #[expect(dead_code)]
     pub test: TestEnum,
 }
 
@@ -36,13 +53,13 @@ impl EntityCommand for TestProto {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub enum TestEnum {
+enum TestEnum {
     A,
     B,
 }
 
 #[derive(Serialize, Deserialize, Asset, TypePath, Clone)]
-pub struct TestManifest {
+struct TestManifest {
     pub name: String,
     pub test: TestEnum,
 }
@@ -55,6 +72,13 @@ impl Manifest for TestManifest {
             name: self.name.clone(),
             test: self.test.clone(),
         }
+    }
+}
+
+fn transition_on_esc(mut state: ResMut<NextState<GameState>>, input: Res<ButtonInput<KeyCode>>) {
+    if input.just_pressed(KeyCode::Escape) {
+        debug!("Transitioning to Running");
+        state.set(GameState::Running);
     }
 }
 

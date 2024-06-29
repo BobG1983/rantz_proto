@@ -6,24 +6,46 @@ use bevy::{
 };
 use std::any::type_name;
 
-pub fn update_manifest_loader(asset_server: Res<AssetServer>, mut loader: ResMut<ManifestLoader>) {
+pub fn update_loader(asset_server: Res<AssetServer>, mut loader: ResMut<ManifestLoader>) {
     loader.update_load_states(&asset_server);
 }
 
-pub fn process_manifest<M: Manifest<Output = P>, P: Prototype>(
-    loader: Res<ManifestLoader>,
+pub fn load<M: Manifest>(
+    mut asset_server: ResMut<AssetServer>,
+    mut loader: ResMut<ManifestLoader>,
+    mut has_loaded: Local<bool>,
+) {
+    if *has_loaded {
+        return;
+    }
+    debug!("Manifest loading: {:?}", type_name::<M>());
+    loader.load::<M>(&mut asset_server);
+    *has_loaded = true;
+}
+
+pub fn load_collection<M: Manifest>(
+    mut asset_server: ResMut<AssetServer>,
+    mut loader: ResMut<ManifestLoader>,
+    mut has_loaded: Local<bool>,
+) {
+    if *has_loaded {
+        return;
+    }
+    debug!("Manifest collection loading: {:?}", type_name::<M>());
+    loader.load_collection::<M>(&mut asset_server);
+    *has_loaded = true;
+}
+
+pub fn process<M: Manifest<Output = P>, P: Prototype>(
+    mut loader: ResMut<ManifestLoader>,
     mut assets: ResMut<Assets<M>>,
     mut protos: ResMut<PrototypeLibrary<P>>,
 ) {
-    if !assets.is_changed() {
+    if loader.is_empty() {
         return;
     }
 
-    let Some(status) = loader.get_manifest_status::<M>() else {
-        error!(
-            "Manifest not found in manifest loader: {:?}",
-            type_name::<M>()
-        );
+    let Some(status) = loader.get_status::<M>() else {
         return;
     };
 
@@ -32,7 +54,7 @@ pub fn process_manifest<M: Manifest<Output = P>, P: Prototype>(
             let handle = status.handle.clone_weak().typed::<M>();
             if let Some(manifest) = assets.remove(handle) {
                 let item: P = manifest.reify();
-
+                loader.remove::<M>();
                 if let Err(e) = protos.insert(item) {
                     error!("{}", e)
                 }
@@ -45,20 +67,16 @@ pub fn process_manifest<M: Manifest<Output = P>, P: Prototype>(
     }
 }
 
-pub fn process_manifest_collection<M: Manifest<Output = P>, P: Prototype>(
-    loader: Res<ManifestLoader>,
+pub fn process_collection<M: Manifest<Output = P>, P: Prototype>(
+    mut loader: ResMut<ManifestLoader>,
     mut assets: ResMut<Assets<ManifestCollection<M>>>,
     mut protos: ResMut<PrototypeLibrary<P>>,
 ) {
-    if !assets.is_changed() {
+    if loader.is_empty() {
         return;
     }
 
-    let Some(status) = loader.get_manifest_status::<M>() else {
-        error!(
-            "Manifest not found in manifest loader: {:?}",
-            type_name::<M>()
-        );
+    let Some(status) = loader.get_collection_status::<M>() else {
         return;
     };
 
@@ -68,7 +86,7 @@ pub fn process_manifest_collection<M: Manifest<Output = P>, P: Prototype>(
             if let Some(collection) = assets.remove(handle) {
                 for manifest in collection {
                     let item: P = manifest.reify();
-
+                    loader.remove_collection::<M>();
                     if let Err(e) = protos.insert(item) {
                         error!("{}", e)
                     }

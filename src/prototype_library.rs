@@ -57,7 +57,7 @@ where
         self.get_mut(&Id::from_name(name))
     }
 
-    pub fn insert(&mut self, item: P) -> Result<Id<P>, PrototypeLibraryError> {
+    pub(crate) fn insert(&mut self, item: P) -> Result<Id<P>, PrototypeLibraryError> {
         let id = Id::from_name(&item.to_string());
         if self.prototypes.contains_key(&id) {
             Err(PrototypeLibraryError::Duplicate(
@@ -67,29 +67,6 @@ where
             self.prototypes.insert(id, item);
             Ok(id)
         }
-    }
-
-    pub fn insert_from_manifest<M: Manifest<Output = P>>(
-        &mut self,
-        manifest: M,
-    ) -> Result<Id<P>, PrototypeLibraryError> {
-        self.insert(manifest.reify())
-    }
-
-    pub fn remove(&mut self, id: Id<P>) -> Result<P, PrototypeLibraryError> {
-        self.prototypes
-            .remove(&id)
-            .ok_or(PrototypeLibraryError::NotFound(
-                type_name::<P>().to_string(),
-            ))
-    }
-
-    pub fn remove_by_name(&mut self, name: &str) -> Result<P, PrototypeLibraryError> {
-        self.remove(Id::from_name(name))
-    }
-
-    pub fn clear(&mut self) {
-        self.prototypes.clear();
     }
 
     pub fn is_empty(&self) -> bool {

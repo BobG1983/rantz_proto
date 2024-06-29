@@ -7,7 +7,6 @@ impl Plugin for ProtoPlugin {
     fn build(&self, app: &mut App) {
         Self::init_resources(app);
         Self::add_systems(app);
-        Self::configure_sets(app);
     }
 }
 
@@ -17,20 +16,10 @@ impl ProtoPlugin {
     }
 
     pub fn add_systems(app: &mut App) {
-        app.add_systems(
-            PreUpdate,
-            update_manifest_loader.in_set(ProtoSchedule::Loading),
-        )
-        .add_systems(
-            PostUpdate,
-            handle_async_spawn.in_set(ProtoSchedule::Spawning),
-        );
-    }
-
-    pub fn configure_sets(app: &mut App) {
-        app.configure_sets(
-            PreUpdate,
-            (ProtoSchedule::Loading, ProtoSchedule::Processing).chain(),
-        );
+        app.add_systems(Update, update_loader.in_set(ProtoSchedule::Loading))
+            .add_systems(
+                PostUpdate,
+                handle_async_spawn.in_set(ProtoSchedule::Spawning),
+            );
     }
 }
