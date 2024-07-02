@@ -4,33 +4,28 @@ use bevy::{
     tasks::{block_on, poll_once},
 };
 
-pub fn update_loader_status(asset_server: Res<AssetServer>, mut loader: ResMut<ManifestLoader>) {
-    loader.update_load_states(&asset_server);
-}
-
 pub fn load<M: Manifest>(
     mut asset_server: ResMut<AssetServer>,
     mut loader: ResMut<ManifestLoader>,
-    mut has_loaded: Local<bool>,
 ) {
-    if *has_loaded {
+    if loader.is_loaded::<M>() {
         return;
     }
 
     loader.load::<M>(&mut asset_server);
-    *has_loaded = true;
 }
 
-pub fn process<M: Manifest<Output = P>, P: Prototype>(
-    mut loader: ResMut<ManifestLoader>,
+pub fn track_asset<M: Manifest<Output = P>, P: Prototype>(
+    mut events: EventReader<AssetEvent<ManifestCollection<M>>>,
     mut assets: ResMut<Assets<ManifestCollection<M>>>,
     mut protos: ResMut<PrototypeLibrary<P>>,
+    mut loader: ResMut<ManifestLoader>,
 ) {
-    if loader.is_empty() {
-        return;
+    for ev in events.read() {
+        if let AssetEvent::LoadedWithDependencies { id: _ } = ev {
+            loader.process::<M, P>(&mut assets, &mut protos)
+        }
     }
-
-    loader.process::<M, P>(&mut assets, &mut protos);
 }
 
 pub fn handle_async_spawn(

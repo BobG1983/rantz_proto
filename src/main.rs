@@ -13,7 +13,10 @@ fn main() {
         }))
         .add_plugins(ProtoPlugin)
         .add_prototype::<TestManifest, TestProto>("items.ron")
-        .add_systems(Update, transition_on_esc)
+        .add_systems(
+            Update,
+            transition_on_esc.run_if(in_state(GameState::Waiting)),
+        )
         .add_systems(
             Update,
             (spawn_stuff, check_stuff, count_stuff).run_if(in_state(GameState::Running)),
@@ -28,15 +31,13 @@ fn main() {
 #[derive(Debug, Clone, States, Hash, PartialEq, Eq, Default)]
 enum GameState {
     #[default]
-    Loading,
+    Waiting,
     Running,
 }
 
 #[derive(Debug, Clone, Prototype)]
 struct TestProto {
     pub name: String,
-    #[expect(dead_code)]
-    pub test: TestEnum,
 }
 
 impl Display for TestProto {
@@ -52,16 +53,9 @@ impl EntityCommand for TestProto {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-enum TestEnum {
-    A,
-    B,
-}
-
-#[derive(Serialize, Deserialize, Asset, TypePath, Clone)]
+#[derive(Debug, Serialize, Deserialize, Asset, TypePath, Clone)]
 struct TestManifest {
     pub name: String,
-    pub test: TestEnum,
 }
 
 impl Manifest for TestManifest {
@@ -70,7 +64,6 @@ impl Manifest for TestManifest {
     fn reify(&self) -> TestProto {
         TestProto {
             name: self.name.clone(),
-            test: self.test.clone(),
         }
     }
 }
@@ -84,34 +77,32 @@ fn transition_on_esc(mut state: ResMut<NextState<GameState>>, input: Res<ButtonI
 
 fn check_stuff(protos: Res<PrototypeLibrary<TestProto>>, mut done: Local<bool>) {
     if !*done && !protos.is_empty() {
-        debug!("All manifests loaded");
+        debug!("{:?} prototypes loaded", protos.len());
         *done = true;
     }
 }
 
-fn spawn_stuff(
-    mut commands: Commands,
-    protos: Res<PrototypeLibrary<TestProto>>,
-    mut counter: Local<u32>,
-) {
+fn spawn_stuff(mut commands: Commands, protos: Res<PrototypeLibrary<TestProto>>) {
     if protos.is_empty() {
         return;
     }
 
-    if *counter < 10 {
-        *counter += 1;
-        commands.spawn_prototype_async(protos.first().unwrap());
-    }
+    commands.spawn_prototype_async(protos.first().unwrap());
 }
 
-fn count_stuff(query: Query<&Name>, mut events: EventWriter<AppExit>) {
-    let count = query.iter().count();
+fn count_stuff(
+    mut commands: Commands,
+    query: Query<(Entity, &Name)>,
+    mut events: EventWriter<AppExit>,
+    input: Res<ButtonInput<KeyCode>>,
+) {
+    for (entity, name) in query.iter() {
+        debug!("{:?}: {:?}", name, entity);
 
-    if count <= 10 {
-        debug!("I see {} entities", count)
-    };
+        commands.entity(entity).despawn_recursive();
+    }
 
-    if count >= 10 {
+    if input.just_pressed(KeyCode::Escape) {
         debug!("Exiting");
         events.send_default();
     }

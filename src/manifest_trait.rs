@@ -1,6 +1,7 @@
 use crate::prelude::*;
 use bevy::prelude::*;
 use serde::Deserialize;
+use std::fmt::Debug;
 
 // pub trait Manifest<P>: Asset + for<'de> Deserialize<'de>
 // where
@@ -10,7 +11,7 @@ use serde::Deserialize;
 //     fn reify(&self) -> P;
 // }
 
-pub trait Manifest: Clone + Asset + for<'de> Deserialize<'de> {
+pub trait Manifest: Debug + Clone + Asset + for<'de> Deserialize<'de> {
     const FORMAT: ManifestFormat;
     type Output;
     fn reify(&self) -> Self::Output;
@@ -28,4 +29,3 @@ where
         T::FORMAT
     }
 }
-

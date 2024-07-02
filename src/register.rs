@@ -28,7 +28,7 @@ impl RegisterPrototype for App {
         // Add processing system
         self.add_systems(
             Update,
-            (load::<M>, process::<M, P>)
+            (load::<M>, track_asset::<M, P>)
                 .chain()
                 .in_set(ProtoSchedule::Loading),
         );

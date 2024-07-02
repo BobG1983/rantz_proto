@@ -1,12 +1,10 @@
 (
-    protos: [
+    prototypes: [
         (
             name: "Foo",
-            test: A,
         ),
         (
             name: "Bar",
-            test: B,
         )
     ]
 )

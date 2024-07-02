@@ -1,5 +1,3 @@
-use std::any::type_name;
-
 use crate::prelude::*;
 use bevy::{prelude::*, utils::HashMap};
 use thiserror::Error;
@@ -57,20 +55,22 @@ where
         self.get_mut(&Id::from_name(name))
     }
 
-    pub(crate) fn insert(&mut self, item: P) -> Result<Id<P>, PrototypeLibraryError> {
+    pub(crate) fn insert(&mut self, item: P) -> Id<P> {
         let id = Id::from_name(&item.to_string());
-        if self.prototypes.contains_key(&id) {
-            Err(PrototypeLibraryError::Duplicate(
-                type_name::<P>().to_string(),
-            ))
-        } else {
-            self.prototypes.insert(id, item);
-            Ok(id)
-        }
+        self.prototypes.insert(id, item);
+        id
+    }
+
+    pub(crate) fn clear(&mut self) {
+        self.prototypes.clear();
     }
 
     pub fn is_empty(&self) -> bool {
         self.prototypes.is_empty()
+    }
+
+    pub fn len(&self) -> usize {
+        self.prototypes.len()
     }
 
     pub fn first(&self) -> Option<P> {

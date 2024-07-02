@@ -7,7 +7,7 @@ pub struct ManifestCollection<M>
 where
     M: Asset + Clone,
 {
-    pub protos: Vec<M>,
+    pub prototypes: Vec<M>,
 }
 
 impl<M> AccessManifestFormat for ManifestCollection<M>
@@ -25,7 +25,7 @@ where
 {
     fn default() -> Self {
         Self {
-            protos: Default::default(),
+            prototypes: Default::default(),
         }
     }
 }
@@ -77,9 +77,9 @@ where
     type Item = M;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index < self.collection.protos.len() {
+        if self.index < self.collection.prototypes.len() {
             self.index += 1;
-            Some(self.collection.protos[self.index - 1].clone())
+            Some(self.collection.prototypes[self.index - 1].clone())
         } else {
             None
         }
@@ -101,9 +101,9 @@ where
     type Item = M;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index < self.collection.protos.len() {
+        if self.index < self.collection.prototypes.len() {
             self.index += 1;
-            Some(self.collection.protos[self.index - 1].clone())
+            Some(self.collection.prototypes[self.index - 1].clone())
         } else {
             None
         }
