@@ -12,31 +12,20 @@ mod schedule;
 mod systems;
 
 pub mod prelude {
-    pub use crate::{id::Id, library::*, proto_plugin::*, schedules::*, traits::*};
-    pub(crate) use crate::{loader::*, systems::*};
-}
-
-pub mod traits {
-    pub use crate::{
-        commands_ext::*, manifest_format::ManifestFormat, manifest_trait::Manifest,
-        prototype_trait::Prototype, register::RegisterPrototype,
+    pub(crate) use crate::{
+        commands_ext::ProtoSpawnTask, manifest_collection::ManifestCollection,
+        manifest_loader::ManifestLoader, manifest_trait::AccessManifestFormat, systems::*,
     };
 
-    pub(crate) use crate::manifest_trait::AccessManifestFormat;
-}
-
-pub mod library {
-    pub use crate::prototype_library::{PrototypeLibrary, PrototypeLibraryError};
-}
-
-pub mod plugins {
-    pub use crate::proto_plugin::ProtoPlugin;
-}
-
-pub mod schedules {
-    pub use crate::schedule::ProtoSchedule;
-}
-
-pub(crate) mod loader {
-    pub use crate::{manifest_collection::ManifestCollection, manifest_loader::ManifestLoader};
+    pub use crate::{
+        commands_ext::{SpawnPrototypeAsyncExt, SpawnPrototypeExt},
+        id::Id,
+        manifest_format::ManifestFormat,
+        manifest_trait::Manifest,
+        proto_plugin::ProtoPlugin,
+        prototype_library::PrototypeLibrary,
+        prototype_trait::Prototype,
+        register::RegisterPrototype,
+        schedule::ProtoSchedule,
+    };
 }

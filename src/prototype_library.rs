@@ -1,6 +1,5 @@
 use crate::prelude::*;
 use bevy::{prelude::*, utils::HashMap};
-use thiserror::Error;
 
 #[derive(Debug, Resource)]
 pub struct PrototypeLibrary<P>
@@ -99,14 +98,4 @@ where
             prototypes: Default::default(),
         }
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Error)]
-pub enum PrototypeLibraryError {
-    /// The name of the item is already in use.
-    #[error("Item: {} is already in use.", _0)]
-    Duplicate(String),
-    /// The item was not found.
-    #[error("Item: {} was not found.", _0)]
-    NotFound(String),
 }

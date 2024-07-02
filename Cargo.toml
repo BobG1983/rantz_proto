@@ -15,7 +15,6 @@ description = "An opinionated rust library for transforming on-disk assets into 
 [dependencies]
 bevy = { version = "0.13", default-features = true, features = ["bevy_asset"] }
 serde = { version = "1.0.203", features = ["derive"] }
-thiserror = "1.0.61"
 bevy_common_assets = { version = "0.10.0", default-features = false }
 
 [features]

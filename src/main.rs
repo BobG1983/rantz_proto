@@ -1,7 +1,6 @@
 use bevy::{app::AppExit, log::LogPlugin, prelude::*};
 use rantz_proto::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::fmt::Display;
 
 fn main() {
     App::new()
@@ -40,13 +39,11 @@ struct TestProto {
     pub name: String,
 }
 
-impl Display for TestProto {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "TestProto({})", self.name)
-    }
-}
-
 impl Prototype for TestProto {
+    fn rebuild(&self, target: &mut EntityWorldMut) {
+        self.build(target);
+    }
+
     fn build(&self, target: &mut EntityWorldMut) {
         target.insert(Name::new(self.name.clone()));
     }
