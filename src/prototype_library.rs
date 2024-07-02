@@ -56,7 +56,7 @@ where
     }
 
     pub(crate) fn insert(&mut self, item: P) -> Id<P> {
-        let id = Id::from_name(&item.to_string());
+        let id = Id::from_name(&item.name());
         self.prototypes.insert(id, item);
         id
     }

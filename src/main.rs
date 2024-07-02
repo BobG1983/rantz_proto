@@ -50,6 +50,10 @@ impl Prototype for TestProto {
     fn build(&self, target: &mut EntityWorldMut) {
         target.insert(Name::new(self.name.clone()));
     }
+
+    fn name(&self) -> String {
+        self.name.clone()
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Asset, TypePath, Clone)]
@@ -81,24 +85,28 @@ fn check_stuff(protos: Res<PrototypeLibrary<TestProto>>, mut done: Local<bool>) 
     }
 }
 
-fn spawn_stuff(mut commands: Commands, protos: Res<PrototypeLibrary<TestProto>>) {
+fn spawn_stuff(
+    mut commands: Commands,
+    protos: Res<PrototypeLibrary<TestProto>>,
+    mut counter: Local<u32>,
+) {
     if protos.is_empty() {
         return;
     }
 
-    commands.spawn_prototype_async(protos.first().unwrap());
+    if *counter < 1 {
+        *counter += 1;
+        commands.spawn_prototype_async(protos.first().unwrap());
+    }
 }
 
 fn count_stuff(
-    mut commands: Commands,
     query: Query<(Entity, &Name)>,
     mut events: EventWriter<AppExit>,
     input: Res<ButtonInput<KeyCode>>,
 ) {
     for (entity, name) in query.iter() {
         debug!("{:?}: {:?}", name, entity);
-
-        commands.entity(entity).despawn_recursive();
     }
 
     if input.just_pressed(KeyCode::Escape) {
