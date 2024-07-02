@@ -14,7 +14,6 @@ mod systems;
 pub mod prelude {
     pub use crate::{id::Id, library::*, proto_plugin::*, schedules::*, traits::*};
     pub(crate) use crate::{loader::*, systems::*};
-    pub use rantz_proto_macros::Prototype;
 }
 
 pub mod traits {

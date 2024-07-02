@@ -19,7 +19,7 @@ pub trait SpawnPrototypeAsyncExt {
 impl<'w, 's> SpawnPrototypeExt for Commands<'w, 's> {
     fn spawn_prototype(&mut self, proto: impl Prototype) {
         let mut e = self.spawn_empty();
-        e.add(proto);
+        e.add(move |mut e: EntityWorldMut| proto.build(&mut e));
     }
 }
 impl<'w, 's> SpawnPrototypeAsyncExt for Commands<'w, 's> {
@@ -40,16 +40,16 @@ impl<'w, 's> SpawnPrototypeAsyncExt for Commands<'w, 's> {
 impl SpawnPrototypeExt for CommandQueue {
     fn spawn_prototype(&mut self, proto: impl Prototype) {
         self.push(move |world: &mut World| {
-            let id = world.spawn_empty().id();
-            proto.apply(id, world);
+            let mut target = world.spawn_empty();
+            proto.build(&mut target);
         });
     }
 }
 
 impl SpawnPrototypeExt for World {
     fn spawn_prototype(&mut self, proto: impl Prototype) {
-        let id = self.spawn_empty().id();
-        proto.apply(id, self);
+        let mut target = self.spawn_empty();
+        proto.build(&mut target);
     }
 }
 impl SpawnPrototypeAsyncExt for World {

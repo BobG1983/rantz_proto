@@ -1,4 +1,4 @@
-use bevy::{app::AppExit, ecs::system::EntityCommand, log::LogPlugin, prelude::*};
+use bevy::{app::AppExit, log::LogPlugin, prelude::*};
 use rantz_proto::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
@@ -35,7 +35,7 @@ enum GameState {
     Running,
 }
 
-#[derive(Debug, Clone, Prototype)]
+#[derive(Debug, Clone)]
 struct TestProto {
     pub name: String,
 }
@@ -46,10 +46,9 @@ impl Display for TestProto {
     }
 }
 
-impl EntityCommand for TestProto {
-    fn apply(self, entity: Entity, world: &mut World) {
-        let mut target = world.entity_mut(entity);
-        target.insert(Name::new(self.name));
+impl Prototype for TestProto {
+    fn build(&self, target: &mut EntityWorldMut) {
+        target.insert(Name::new(self.name.clone()));
     }
 }
 

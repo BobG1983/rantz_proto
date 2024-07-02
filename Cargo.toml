@@ -17,7 +17,6 @@ bevy = { version = "0.13", default-features = true, features = ["bevy_asset"] }
 serde = { version = "1.0.203", features = ["derive"] }
 thiserror = "1.0.61"
 bevy_common_assets = { version = "0.10.0", default-features = false }
-rantz_proto_macros = { version = "0.1.0", path = "rantz_proto_macros" }
 
 [features]
 # All file formats are disabled by default: you will typically want to enable
@@ -61,9 +60,6 @@ ron = "0.8"
 rantz_proto = { path = ".", features = ["ron", "hot_reload"] }
 # Give us access to the full Bevy default features for examples.
 bevy = { version = "0.13" }
-
-[workspace]
-members = ["rantz_proto_macros"]
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

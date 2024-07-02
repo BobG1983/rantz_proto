@@ -2923,19 +2923,9 @@ dependencies = [
  "bevy",
  "bevy_common_assets",
  "rantz_proto",
- "rantz_proto_macros",
  "ron",
  "serde",
  "thiserror",
-]
-
-[[package]]
-name = "rantz_proto_macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.68",
 ]
 
 [[package]]
