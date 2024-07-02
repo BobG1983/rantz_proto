@@ -37,6 +37,7 @@ enum GameState {
 #[derive(Debug, Clone)]
 struct TestProto {
     pub name: String,
+    pub i: u32,
 }
 
 impl Prototype for TestProto {
@@ -45,7 +46,7 @@ impl Prototype for TestProto {
     }
 
     fn build(&self, target: &mut EntityWorldMut) {
-        target.insert(Name::new(self.name.clone()));
+        target.insert(Name::new(self.name.clone() + &self.i.to_string()));
     }
 
     fn name(&self) -> String {
@@ -56,6 +57,7 @@ impl Prototype for TestProto {
 #[derive(Debug, Serialize, Deserialize, Asset, TypePath, Clone)]
 struct TestManifest {
     pub name: String,
+    pub i: u32,
 }
 
 impl Manifest for TestManifest {
@@ -64,6 +66,7 @@ impl Manifest for TestManifest {
     fn reify(&self) -> TestProto {
         TestProto {
             name: self.name.clone(),
+            i: self.i,
         }
     }
 }

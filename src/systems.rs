@@ -1,6 +1,7 @@
+use std::any::{type_name, TypeId};
+
 use crate::prelude::*;
 use bevy::{
-    ecs::entity,
     prelude::*,
     tasks::{block_on, poll_once},
 };
@@ -17,28 +18,34 @@ pub fn load<M: Manifest>(
 }
 
 pub fn track_asset<M: Manifest<Output = P>, P: Prototype>(
+    mut commands: Commands,
     mut events: EventReader<AssetEvent<ManifestCollection<M>>>,
     mut assets: ResMut<Assets<ManifestCollection<M>>>,
     mut protos: ResMut<PrototypeLibrary<P>>,
     mut loader: ResMut<ManifestLoader>,
+    rebuild_systems: Option<Res<RebuildSystems>>,
 ) {
+    let mut need_rebuild = false;
     for ev in events.read() {
         if let AssetEvent::LoadedWithDependencies { id: _ } = ev {
-            loader.process::<M, P>(&mut assets, &mut protos)
+            loader.process::<M, P>(&mut assets, &mut protos);
+
+            need_rebuild = true;
         }
     }
-}
 
-pub fn rebuild<P: Prototype>(
-    mut commands: Commands,
-    query: Query<(Entity, &FromPrototype<P>)>,
-    protos: ResMut<PrototypeLibrary<P>>,
-) {
-    for (e, proto) in query.iter() {
-        if let Some(proto) = protos.get(&proto.0) {
-            let mut target = commands.entity(e);
-            target.add(move |mut e: EntityWorldMut| proto.build(&mut e));
-        }
+    if need_rebuild {
+        let Some(rebuild_systems) = rebuild_systems else {
+            error!("RebuildSystems resource not registered");
+            return;
+        };
+
+        let type_id = TypeId::of::<P>();
+        let Some(system_id) = rebuild_systems.0.get(&type_id) else {
+            error!("Rebuild system not registered for: {:?}", type_name::<P>());
+            return;
+        };
+        commands.run_system(*system_id);
     }
 }
 

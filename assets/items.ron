@@ -2,9 +2,11 @@
     prototypes: [
         (
             name: "Foo",
+            i: 1
         ),
         (
             name: "Bar",
+            i: 2
         )
     ]
 )

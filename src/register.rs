@@ -33,6 +33,10 @@ impl RegisterPrototype for App {
                 .in_set(ProtoSchedule::Loading),
         );
 
+        // If hot reloading then register the rebuild system
+        #[cfg(feature = "hot_reload")]
+        register_rebuild_system::<P>(&mut self.world);
+
         self
     }
 }

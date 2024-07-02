@@ -19,7 +19,10 @@ pub trait SpawnPrototypeAsyncExt {
 impl<'w, 's> SpawnPrototypeExt for Commands<'w, 's> {
     fn spawn_prototype<P: Prototype>(&mut self, proto: P) {
         let mut e = self.spawn_empty();
+
+        #[cfg(feature = "hot_reload")]
         e.insert(FromPrototype(proto.id()));
+
         e.add(move |mut e: EntityWorldMut| proto.build(&mut e));
     }
 }
@@ -42,8 +45,10 @@ impl SpawnPrototypeExt for CommandQueue {
     fn spawn_prototype<P: Prototype>(&mut self, proto: P) {
         self.push(move |world: &mut World| {
             let mut target = world.spawn_empty();
-            target.insert(FromPrototype(proto.id()));
             proto.build(&mut target);
+
+            #[cfg(feature = "hot_reload")]
+            target.insert(FromPrototype(proto.id()));
         });
     }
 }
@@ -51,8 +56,10 @@ impl SpawnPrototypeExt for CommandQueue {
 impl SpawnPrototypeExt for World {
     fn spawn_prototype<P: Prototype>(&mut self, proto: P) {
         let mut target = self.spawn_empty();
-        target.insert(FromPrototype(proto.id()));
         proto.build(&mut target);
+
+        #[cfg(feature = "hot_reload")]
+        target.insert(FromPrototype(proto.id()));
     }
 }
 impl SpawnPrototypeAsyncExt for World {

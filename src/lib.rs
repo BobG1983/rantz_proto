@@ -1,4 +1,6 @@
 mod commands_ext;
+#[cfg(feature = "hot_reload")]
+mod hot_reload;
 mod id;
 mod manifest_collection;
 mod manifest_format;
@@ -20,6 +22,9 @@ pub mod prelude {
         prototype_trait::FromPrototype,
         systems::{handle_async_spawn, load, track_asset},
     };
+
+    #[cfg(feature = "hot_reload")]
+    pub(crate) use crate::hot_reload::*;
 
     pub use crate::{
         commands_ext::{SpawnPrototypeAsyncExt, SpawnPrototypeExt},
