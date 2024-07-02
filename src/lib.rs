@@ -13,8 +13,12 @@ mod systems;
 
 pub mod prelude {
     pub(crate) use crate::{
-        commands_ext::ProtoSpawnTask, manifest_collection::ManifestCollection,
-        manifest_loader::ManifestLoader, manifest_trait::AccessManifestFormat, systems::*,
+        commands_ext::ProtoSpawnTask,
+        manifest_collection::ManifestCollection,
+        manifest_loader::ManifestLoader,
+        manifest_trait::AccessManifestFormat,
+        prototype_trait::FromPrototype,
+        systems::{handle_async_spawn, load, track_asset},
     };
 
     pub use crate::{

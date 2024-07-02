@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use bevy::{
+    ecs::entity,
     prelude::*,
     tasks::{block_on, poll_once},
 };
@@ -24,6 +25,19 @@ pub fn track_asset<M: Manifest<Output = P>, P: Prototype>(
     for ev in events.read() {
         if let AssetEvent::LoadedWithDependencies { id: _ } = ev {
             loader.process::<M, P>(&mut assets, &mut protos)
+        }
+    }
+}
+
+pub fn rebuild<P: Prototype>(
+    mut commands: Commands,
+    query: Query<(Entity, &FromPrototype<P>)>,
+    protos: ResMut<PrototypeLibrary<P>>,
+) {
+    for (e, proto) in query.iter() {
+        if let Some(proto) = protos.get(&proto.0) {
+            let mut target = commands.entity(e);
+            target.add(move |mut e: EntityWorldMut| proto.build(&mut e));
         }
     }
 }
