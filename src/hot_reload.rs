@@ -2,6 +2,10 @@ use crate::prelude::*;
 use bevy::{ecs::system::SystemId, prelude::*, utils::HashMap};
 use std::any::TypeId;
 
+#[cfg(feature = "hot_reload")]
+#[derive(Debug, Clone, Component, PartialEq, Eq)]
+pub struct FromPrototype<P: Prototype>(pub Id<P>);
+
 #[derive(Resource)]
 pub(crate) struct RebuildSystems(pub HashMap<TypeId, SystemId>);
 

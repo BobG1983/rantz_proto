@@ -20,7 +20,7 @@ bevy_common_assets = { version = "0.10.0", default-features = false }
 [features]
 # All file formats are disabled by default: you will typically want to enable
 # only the formats you need. Picking one per project is recommended.
-default = ["ron", "hot_reload"]
+default = ["ron"]
 # Support for hot reloading
 hot_reload = ["bevy/file_watcher"]
 # Support for all file format features
@@ -56,7 +56,7 @@ csv = ["bevy_common_assets/csv"]
 [dev-dependencies]
 ron = "0.8"
 # Enables non-default features for examples and tests.
-rantz_proto = { path = ".", features = ["ron", "hot_reload"] }
+rantz_proto = { path = ".", features = ["ron"] }
 # Give us access to the full Bevy default features for examples.
 bevy = { version = "0.13" }
 

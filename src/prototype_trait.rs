@@ -1,4 +1,4 @@
-use bevy::prelude::{Component, EntityWorldMut};
+use bevy::prelude::EntityWorldMut;
 use std::fmt::Debug;
 
 use crate::id::Id;
@@ -17,11 +17,7 @@ pub trait Prototype: Clone + Send + Sync + Debug + 'static {
     /// Builds the prototype on a target entity
     fn build(&self, target: &mut EntityWorldMut);
 
-    /// Rebuilds the prototype on a target entity, used for hot reloading
+    /// Rebuilds the prototype on a target entity if 'hot_reload' is enabled
     /// by default this does nothing
-    #[cfg(feature = "hot_reload")]
     fn rebuild(&self, _: &mut EntityWorldMut) {}
 }
-
-#[derive(Debug, Clone, Component, PartialEq, Eq)]
-pub struct FromPrototype<P: Prototype>(pub Id<P>);

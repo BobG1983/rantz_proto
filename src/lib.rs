@@ -19,7 +19,6 @@ pub mod prelude {
         manifest_collection::ManifestCollection,
         manifest_loader::ManifestLoader,
         manifest_trait::AccessManifestFormat,
-        prototype_trait::FromPrototype,
         systems::{handle_async_spawn, load, track_asset},
     };
 

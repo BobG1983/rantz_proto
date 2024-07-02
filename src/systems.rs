@@ -1,5 +1,3 @@
-use std::any::{type_name, TypeId};
-
 use crate::prelude::*;
 use bevy::{
     prelude::*,
@@ -17,29 +15,18 @@ pub fn load<M: Manifest>(
     loader.load::<M>(&mut asset_server);
 }
 
+#[cfg(feature = "hot_reload")]
 pub fn track_asset<M: Manifest<Output = P>, P: Prototype>(
     mut commands: Commands,
-    mut events: EventReader<AssetEvent<ManifestCollection<M>>>,
-    mut assets: ResMut<Assets<ManifestCollection<M>>>,
-    mut protos: ResMut<PrototypeLibrary<P>>,
-    mut loader: ResMut<ManifestLoader>,
-    rebuild_systems: Option<Res<RebuildSystems>>,
+    events: EventReader<AssetEvent<ManifestCollection<M>>>,
+    assets: ResMut<Assets<ManifestCollection<M>>>,
+    protos: ResMut<PrototypeLibrary<P>>,
+    loader: ResMut<ManifestLoader>,
+    rebuild_systems: Res<RebuildSystems>,
 ) {
-    let mut need_rebuild = false;
-    for ev in events.read() {
-        if let AssetEvent::LoadedWithDependencies { id: _ } = ev {
-            loader.process::<M, P>(&mut assets, &mut protos);
+    use std::any::{type_name, TypeId};
 
-            need_rebuild = true;
-        }
-    }
-
-    if need_rebuild {
-        let Some(rebuild_systems) = rebuild_systems else {
-            error!("RebuildSystems resource not registered");
-            return;
-        };
-
+    if handle_asset_events(events, loader, assets, protos) {
         let type_id = TypeId::of::<P>();
         let Some(system_id) = rebuild_systems.0.get(&type_id) else {
             error!("Rebuild system not registered for: {:?}", type_name::<P>());
@@ -47,6 +34,34 @@ pub fn track_asset<M: Manifest<Output = P>, P: Prototype>(
         };
         commands.run_system(*system_id);
     }
+}
+
+#[cfg(not(feature = "hot_reload"))]
+pub fn track_asset<M: Manifest<Output = P>, P: Prototype>(
+    events: EventReader<AssetEvent<ManifestCollection<M>>>,
+    assets: ResMut<Assets<ManifestCollection<M>>>,
+    protos: ResMut<PrototypeLibrary<P>>,
+    loader: ResMut<ManifestLoader>,
+) {
+    handle_asset_events(events, loader, assets, protos);
+}
+
+fn handle_asset_events<M: Manifest<Output = P>, P: Prototype>(
+    mut events: EventReader<AssetEvent<ManifestCollection<M>>>,
+    mut loader: ResMut<ManifestLoader>,
+    mut assets: ResMut<Assets<ManifestCollection<M>>>,
+    mut protos: ResMut<PrototypeLibrary<P>>,
+) -> bool {
+    let mut rebuilt = false;
+    for ev in events.read() {
+        if let AssetEvent::LoadedWithDependencies { id: _ } = ev {
+            loader.process::<M, P>(&mut assets, &mut protos);
+
+            rebuilt = true;
+        }
+    }
+
+    rebuilt
 }
 
 pub fn handle_async_spawn(
