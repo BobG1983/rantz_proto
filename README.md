@@ -14,5 +14,6 @@ An opinionated rust library for transforming on-disk assets into Entities in [Be
 TODO:
 
 * Support for iyes_progress
+* Support hot reloading
 * Move main to examples
 * Document

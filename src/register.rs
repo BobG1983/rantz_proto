@@ -8,11 +8,6 @@ pub trait RegisterPrototype {
         &mut self,
         path: impl Into<PathBuf>,
     ) -> &mut Self;
-
-    fn add_prototype_collection<M: Manifest<Output = P>, P: Prototype>(
-        &mut self,
-        path: impl Into<PathBuf>,
-    ) -> &mut Self;
 }
 
 impl RegisterPrototype for App {
@@ -28,7 +23,7 @@ impl RegisterPrototype for App {
         loader.register::<M>(path);
 
         // Add child plugins for asset loading
-        add_plugins::<M>(self);
+        add_plugins::<ManifestCollection<M>>(self);
 
         // Add processing system
         self.add_systems(
@@ -40,36 +35,9 @@ impl RegisterPrototype for App {
 
         self
     }
-
-    fn add_prototype_collection<M: Manifest<Output = P>, P: Prototype>(
-        &mut self,
-        path: impl Into<PathBuf>,
-    ) -> &mut Self {
-        // Init Assets & Resources
-        self.init_asset::<M>();
-        self.init_resource::<PrototypeLibrary<P>>();
-        check_insert_loader(&mut self.world);
-        let mut loader = self.world.resource_mut::<ManifestLoader>();
-        loader.register_collection::<M>(path);
-
-        // Add child plugins for asset loading
-        add_plugins::<ManifestCollection<M>>(self);
-
-        // Add processing system
-        self.add_systems(
-            Update,
-            (load_collection::<M>, process_collection::<M, P>)
-                .chain()
-                .in_set(ProtoSchedule::Loading),
-        );
-
-        self
-    }
 }
 
-fn add_plugins<T: AccessManifestFormat + Clone + Asset + for<'de> Deserialize<'de>>(
-    app: &mut App,
-) {
+fn add_plugins<T: AccessManifestFormat + Clone + Asset + for<'de> Deserialize<'de>>(app: &mut App) {
     match T::manifest_format() {
         #[cfg(feature = "ron")]
         ManifestFormat::Ron => {

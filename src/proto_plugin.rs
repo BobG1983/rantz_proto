@@ -16,7 +16,7 @@ impl ProtoPlugin {
     }
 
     pub fn add_systems(app: &mut App) {
-        app.add_systems(Update, update_loader.in_set(ProtoSchedule::Loading))
+        app.add_systems(Update, update_loader_status.in_set(ProtoSchedule::Loading))
             .add_systems(
                 PostUpdate,
                 handle_async_spawn.in_set(ProtoSchedule::Spawning),

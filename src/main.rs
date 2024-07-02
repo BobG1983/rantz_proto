@@ -12,7 +12,7 @@ fn main() {
             ..default()
         }))
         .add_plugins(ProtoPlugin)
-        .add_prototype_collection::<TestManifest, TestProto>("items.ron")
+        .add_prototype::<TestManifest, TestProto>("items.ron")
         .add_systems(Update, transition_on_esc)
         .add_systems(
             Update,

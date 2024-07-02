@@ -40,7 +40,24 @@ where
 
     fn into_iter(self) -> Self::IntoIter {
         ManifestCollectionIntoIterator {
-            collection: self.protos,
+            collection: self,
+            index: 0,
+        }
+    }
+}
+
+impl<'a, M> IntoIterator for &'a ManifestCollection<M>
+where
+    M: Manifest,
+{
+    type Item = M;
+
+    type IntoIter = ManifestCollectionRefIntoIterator<'a, M>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        ManifestCollectionRefIntoIterator {
+            collection: self,
+            index: 0,
         }
     }
 }
@@ -49,7 +66,8 @@ pub struct ManifestCollectionIntoIterator<M>
 where
     M: Manifest,
 {
-    collection: Vec<M>,
+    collection: ManifestCollection<M>,
+    index: usize,
 }
 
 impl<M> Iterator for ManifestCollectionIntoIterator<M>
@@ -59,6 +77,35 @@ where
     type Item = M;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.collection.pop()
+        if self.index < self.collection.protos.len() {
+            self.index += 1;
+            Some(self.collection.protos[self.index - 1].clone())
+        } else {
+            None
+        }
+    }
+}
+
+pub struct ManifestCollectionRefIntoIterator<'a, M>
+where
+    M: Manifest,
+{
+    collection: &'a ManifestCollection<M>,
+    index: usize,
+}
+
+impl<'a, M> Iterator for ManifestCollectionRefIntoIterator<'a, M>
+where
+    M: Manifest,
+{
+    type Item = M;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index < self.collection.protos.len() {
+            self.index += 1;
+            Some(self.collection.protos[self.index - 1].clone())
+        } else {
+            None
+        }
     }
 }

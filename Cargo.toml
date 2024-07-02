@@ -22,7 +22,9 @@ rantz_proto_macros = { version = "0.1.0", path = "rantz_proto_macros" }
 [features]
 # All file formats are disabled by default: you will typically want to enable
 # only the formats you need. Picking one per project is recommended.
-default = ["ron"]
+default = ["ron", "hot_reload"]
+# Support for hot reloading
+hot_reload = ["bevy/file_watcher"]
 # Support for all file format features
 # Useful for testing
 all_asset_loaders = ["ron", "toml", "yaml", "json", "msgpack", "xml", "csv"]
@@ -56,7 +58,7 @@ csv = ["bevy_common_assets/csv"]
 [dev-dependencies]
 ron = "0.8"
 # Enables non-default features for examples and tests.
-rantz_proto = { path = ".", features = ["ron"] }
+rantz_proto = { path = ".", features = ["ron", "hot_reload"] }
 # Give us access to the full Bevy default features for examples.
 bevy = { version = "0.13" }
 
