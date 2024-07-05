@@ -53,7 +53,7 @@ impl ManifestLoader {
         let untyped_handle = self.loaded.get(&id).unwrap();
         let typed_handle = untyped_handle.clone_weak().typed::<ManifestCollection<M>>();
 
-        let Some(manifest) = assets.get(typed_handle) else {
+        let Some(manifest) = assets.get(&typed_handle) else {
             error!("Failed to get manifest: {:?}", id);
             return;
         };

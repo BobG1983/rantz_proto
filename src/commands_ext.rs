@@ -1,6 +1,6 @@
 use crate::prelude::*;
 use bevy::{
-    ecs::system::CommandQueue,
+    ecs::world::CommandQueue,
     prelude::*,
     tasks::{AsyncComputeTaskPool, Task},
 };

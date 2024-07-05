@@ -18,8 +18,8 @@ impl RegisterPrototype for App {
         // Init Assets & Resources
         self.init_asset::<M>();
         self.init_resource::<PrototypeLibrary<P>>();
-        check_insert_loader(&mut self.world);
-        let mut loader = self.world.resource_mut::<ManifestLoader>();
+        check_insert_loader(self.world_mut());
+        let mut loader = self.world_mut().resource_mut::<ManifestLoader>();
         loader.register::<M>(path);
 
         // Add child plugins for asset loading
@@ -35,7 +35,7 @@ impl RegisterPrototype for App {
 
         // If hot reloading then register the rebuild system
         #[cfg(feature = "hot_reload")]
-        register_rebuild_system::<P>(&mut self.world);
+        register_rebuild_system::<P>(self.world_mut());
 
         self
     }
