@@ -1,5 +1,7 @@
 use crate::prelude::*;
 use bevy::{prelude::*, utils::HashMap};
+#[cfg(feature = "progress_tracking")]
+use iyes_progress::Progress;
 use std::{
     any::{type_name, TypeId},
     path::PathBuf,
@@ -10,6 +12,8 @@ pub struct ManifestLoader {
     to_load: HashMap<TypeId, PathBuf>,
     loaded: HashMap<TypeId, UntypedHandle>,
     processed: HashMap<TypeId, UntypedHandle>,
+    #[cfg(feature = "progress_tracking")]
+    progress: Progress,
 }
 
 impl ManifestLoader {
@@ -17,11 +21,29 @@ impl ManifestLoader {
         Default::default()
     }
 
+    #[cfg(feature = "progress_tracking")]
+    fn inc_progress_todo(&mut self) {
+        self.progress.total += 2;
+    }
+
+    #[cfg(feature = "progress_tracking")]
+    fn inc_progress_done(&mut self) {
+        self.progress.total += 1;
+    }
+
+    #[cfg(feature = "progress_tracking")]
+    pub fn progress(&self) -> &Progress {
+        &self.progress
+    }
+
     pub fn register<M: Manifest>(&mut self, path: impl Into<PathBuf>) {
         let path: PathBuf = path.into();
         let type_id = std::any::TypeId::of::<ManifestCollection<M>>();
 
         self.to_load.insert(type_id, path);
+
+        #[cfg(feature = "progress_tracking")]
+        self.inc_progress_todo();
     }
 
     pub fn load<M: Manifest>(&mut self, asset_server: &mut AssetServer) {
@@ -37,6 +59,9 @@ impl ManifestLoader {
 
         self.loaded.insert(type_id, handle);
         self.to_load.remove(&type_id);
+
+        #[cfg(feature = "progress_tracking")]
+        self.inc_progress_done();
     }
 
     pub fn is_loaded<M: Manifest>(&self) -> bool {
@@ -65,5 +90,8 @@ impl ManifestLoader {
         }
 
         self.processed.insert(id, untyped_handle.clone());
+
+        #[cfg(feature = "progress_tracking")]
+        self.inc_progress_done();
     }
 }
