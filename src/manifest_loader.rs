@@ -28,7 +28,7 @@ impl ManifestLoader {
 
     #[cfg(feature = "progress_tracking")]
     fn inc_progress_done(&mut self) {
-        self.progress.total += 1;
+        self.progress.done += 1;
     }
 
     #[cfg(feature = "progress_tracking")]

@@ -4,7 +4,7 @@ use bevy::{
     tasks::{block_on, poll_once},
 };
 #[cfg(feature = "progress_tracking")]
-use iyes_progress::ProgressCounter;
+use iyes_progress::Progress;
 
 pub fn load<M: Manifest>(
     mut asset_server: ResMut<AssetServer>,
@@ -81,9 +81,6 @@ pub fn handle_async_spawn(
 }
 
 #[cfg(feature = "progress_tracking")]
-pub fn track_progress(counter: ResMut<ProgressCounter>, loader: Res<ManifestLoader>) {
-    debug!("{} work needed", loader.progress().total);
-    debug!("{} work done", loader.progress().done);
-    let progress = loader.progress();
-    counter.manually_track(*progress);
+pub fn track_progress(loader: Res<ManifestLoader>) -> Progress {
+    *loader.progress()
 }

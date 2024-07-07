@@ -1,6 +1,6 @@
 use crate::{prelude::*, systems::track_progress};
 use bevy::prelude::*;
-use iyes_progress::TrackedProgressSet;
+use iyes_progress::{ProgressSystem, TrackedProgressSet};
 
 pub struct ProtoPlugin;
 
@@ -25,6 +25,7 @@ impl ProtoPlugin {
         app.add_systems(
             Update,
             track_progress
+                .track_progress()
                 .in_set(TrackedProgressSet)
                 .in_set(ProtoSchedule::Loading),
         );
