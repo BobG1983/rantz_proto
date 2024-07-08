@@ -36,3 +36,9 @@ Extensions to 'Commands', 'World' and 'CommandQueue' are provided that introduce
 ## Spawning at a Location
 
 I didn't want to be specific about how locations were handled, so this is left up to you. My recommendation is to add a position to your prototypes, and edit that position before calling spawn_prototype.
+
+## Usage
+
+Add the ProtoPlugin to your app. Register your manifests using app.add_manifest() then spawn entities with commands.spawn_prototype().
+
+If you want to control when load happens, use app.configure_sets() on the ProtoSchedule::Loading schedule.
