@@ -13,7 +13,7 @@ description = "An opinionated rust library for transforming on-disk assets into 
 
 
 [dependencies]
-bevy = { version = "0.14.0", default-features = true, features = [
+bevy = { version = "0.14.0", default-features = false, features = [
   "bevy_asset",
 ] }
 serde = { version = "1.0.203", features = ["derive"] }
@@ -27,7 +27,7 @@ default = ["ron", "hot_reload", "progress_tracking"]
 # Support for iyes_progress
 progress_tracking = ["dep:iyes_progress"]
 # Support for hot reloading
-hot_reload = ["bevy/file_watcher"]
+hot_reload = ["bevy/file_watcher", "bevy/multi_threaded"]
 # Support for all file format features
 # Useful for testing
 all_asset_loaders = ["ron", "toml", "yaml", "json", "msgpack", "xml", "csv"]
@@ -58,13 +58,7 @@ xml = ["bevy_common_assets/xml"]
 # Good interop with spreadsheet software though!
 csv = ["bevy_common_assets/csv"]
 
-[dev-dependencies]
-ron = "0.8"
-rantz_proto = { path = ".", features = ["ron", "hot_reload"] }
-# Enables non-default features for examples and tests.
-# Give us access to the full Bevy default features for examples.
-bevy = { version = "0.14.0" }
-
-[workspace.lints.rust]
+[lints.rust]
 unsafe_code = "forbid"
 missing_docs = "warn"
+type_complexity = "allow"

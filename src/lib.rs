@@ -1,3 +1,4 @@
+//! An opinionated library for loading and spawning prototypes
 mod commands_ext;
 #[cfg(feature = "hot_reload")]
 mod hot_reload;
@@ -13,6 +14,7 @@ mod register;
 mod schedule;
 mod systems;
 
+#[doc(hidden)]
 pub mod prelude {
     pub(crate) use crate::{
         commands_ext::ProtoSpawnTask,

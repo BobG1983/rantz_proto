@@ -2,6 +2,7 @@ use crate::{prelude::*, systems::track_progress};
 use bevy::prelude::*;
 use iyes_progress::{ProgressSystem, TrackedProgressSet};
 
+/// Plugin for all of rantz_proto. Add this to your app.
 pub struct ProtoPlugin;
 
 impl Plugin for ProtoPlugin {
@@ -12,11 +13,11 @@ impl Plugin for ProtoPlugin {
 }
 
 impl ProtoPlugin {
-    pub fn init_resources(app: &mut App) {
+    fn init_resources(app: &mut App) {
         app.init_resource::<ManifestLoader>();
     }
 
-    pub fn add_systems(app: &mut App) {
+    fn add_systems(app: &mut App) {
         app.add_systems(
             PostUpdate,
             handle_async_spawn.in_set(ProtoSchedule::Spawning),

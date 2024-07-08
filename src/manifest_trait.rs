@@ -3,17 +3,13 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use std::fmt::Debug;
 
-// pub trait Manifest<P>: Asset + for<'de> Deserialize<'de>
-// where
-//     P: Prototype,
-// {
-//     const FORMAT: ManifestFormat;
-//     fn reify(&self) -> P;
-// }
-
+/// Trait for Manifests, used to load assets from manifests
 pub trait Manifest: Debug + Clone + Asset + for<'de> Deserialize<'de> {
+    /// The format of the manifest (json, ron, etc)
     const FORMAT: ManifestFormat;
+    /// The prototype this manifest generates
     type Output;
+    /// Converts the Manifest into Output
     fn reify(&self) -> Self::Output;
 }
 

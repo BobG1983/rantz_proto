@@ -8,11 +8,17 @@ use bevy::{
 #[derive(Component, Debug)]
 pub(crate) struct ProtoSpawnTask(pub Task<CommandQueue>);
 
+/// An extension trait for [`Commands`] [`CommandQueue`] and [`World`]
+/// to allow direct spawning of prototypes
 pub trait SpawnPrototypeExt {
+    /// Spawns the given prototype
     fn spawn_prototype<P: Prototype>(&mut self, proto: P);
 }
 
+/// An extension trait for [`Commands`] [`CommandQueue`] and [`World`]
+/// to allow direct spawning of prototypes in an async task
 pub trait SpawnPrototypeAsyncExt {
+    /// Spawns the given prototype in an async task
     fn spawn_prototype_async<P: Prototype>(&mut self, proto: P);
 }
 

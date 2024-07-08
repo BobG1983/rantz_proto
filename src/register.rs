@@ -3,7 +3,10 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use std::path::PathBuf;
 
+/// Extension for App for registering prototypes
 pub trait RegisterPrototype {
+    /// Add a prototype to the app. This will load the manifest,
+    /// and insert the prototype into the PrototypeLibrary
     fn add_prototype<M: Manifest<Output = P>, P: Prototype>(
         &mut self,
         path: impl Into<PathBuf>,
